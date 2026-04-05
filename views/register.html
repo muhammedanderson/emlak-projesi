@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Emlak Değerleme | Kayıt</title>
+    <style>body { font-family: Arial; padding: 20px; }</style>
+</head>
+<body>
+    <h2>Sisteme Kayıt Ol</h2>
+    <form action="/register" method="POST">
+        <label>Kullanıcı Adı:</label><br>
+        <input type="text" name="username" required><br><br>
+        
+        <label>Şifre:</label><br>
+        <input type="password" name="password" required><br><br>
+
+        <label>Hesap Türü (Rol):</label><br>
+        <select name="role">
+            <option value="Bireysel Kullanıcı">Bireysel Kullanıcı</option>
+            <option value="Emlak Danışmanı">Emlak Danışmanı</option>
+        </select><br><br>
+
+        <button type="submit">Kayıt Ol</button>
+    </form>
+    <p>Zaten hesabın var mı? <a href="/login">Giriş Yap</a></p>
+</body>
+</html>
