@@ -16,14 +16,14 @@ exports.registerUser = async (req, res) => {
     const { username, password, role } = req.body;
 
     if (!username || !password || !role) {
-        return res.send("Lütfen tüm alanları doldurun.");
+        return res.status(400).json({ success: false, message: "Lütfen tüm alanları doldurun." });
     }
 
     try {
         // Kullanıcı var mı kontrolü
         const existingUser = User.findByUsername(username);
         if (existingUser) {
-            return res.send("Bu kullanıcı adı zaten alınmış.");
+            return res.status(400).json({ success: false, message: "Bu kullanıcı adı zaten alınmış." });
         }
 
         // Şifreyi şifreleme (Bcrypt)
@@ -31,13 +31,16 @@ exports.registerUser = async (req, res) => {
 
         // Kullanıcıyı rolüyle birlikte kaydetme
         User.save({ username, password: hashedPassword, role });
-        
-        // HATA BURADAYDI: Backtick ( ` ) eklendi
-        res.send(`<h1>Kayıt Başarılı!</h1><p>Hoş geldin, ${role} ${username}. <a href="/login">Buradan giriş yapabilirsin</a>.</p>`);
-        
+
+        return res.status(201).json({
+            success: true,
+            message: "Kayıt Başarılı!",
+            redirectUrl: "/login"
+        });
+
     } catch (error) {
         console.error("Kayıt Hatası:", error);
-        res.status(500).send("Sunucu hatası.");
+        return res.status(500).json({ success: false, message: "Sunucu hatası oluştu." });
     }
 };
 
@@ -46,29 +49,32 @@ exports.loginUser = async (req, res) => {
     const { username, password } = req.body;
 
     if (!username || !password) {
-        return res.send("Lütfen kullanıcı adı ve şifrenizi girin.");
+        return res.status(400).json({ success: false, message: "Lütfen kullanıcı adı ve şifrenizi girin." });
     }
 
     try {
         const user = User.findByUsername(username);
-        
+
         // Kullanıcı yoksa
         if (!user) {
-            return res.send("Kullanıcı bulunamadı.");
+            return res.status(404).json({ success: false, message: "Kullanıcı bulunamadı." });
         }
 
         // Şifre eşleşiyor mu kontrolü
         const isMatch = await bcrypt.compare(password, user.password);
-        
+
         if (isMatch) {
-            // Başarılı giriş simülasyonu
-          // Giriş başarılıysa kullanıcıyı direkt analiz paneline uçuruyoruz
-            return res.redirect('/dashboard');
+            // Başarılı girişte frontend'e nereye gideceğini JSON olarak söylüyoruz
+            return res.status(200).json({
+                success: true,
+                message: "Giriş başarılı! Yönlendiriliyorsunuz...",
+                redirectUrl: "/dashboard"
+            });
         } else {
-            res.send("Hatalı şifre!");
+            return res.status(401).json({ success: false, message: "Hatalı şifre!" });
         }
     } catch (error) {
         console.error("Giriş Hatası:", error);
-        res.status(500).send("Sunucu hatası.");
+        return res.status(500).json({ success: false, message: "Sunucu hatası oluştu." });
     }
 };
