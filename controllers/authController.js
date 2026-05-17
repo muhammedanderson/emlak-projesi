@@ -13,7 +13,8 @@ exports.getLoginPage = (req, res) => {
 
 // Kayıt İşlemi (Register)
 exports.registerUser = async (req, res) => {
-    const { username, password, role } = req.body;
+    // GÜNCELLEME: req.body'den gelen companyName bilgisini de yakalıyoruz
+    const { username, password, role, companyName } = req.body;
 
     if (!username || !password || !role) {
         return res.status(400).json({ success: false, message: "Lütfen tüm alanları doldurun." });
@@ -29,8 +30,13 @@ exports.registerUser = async (req, res) => {
         // Şifreyi şifreleme (Bcrypt)
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Kullanıcıyı rolüyle birlikte kaydetme
-        User.save({ username, password: hashedPassword, role });
+        // GÜNCELLEME: Kullanıcıyı rolü ve emlakçıysa firma adıyla birlikte kaydediyoruz
+        User.save({ 
+            username, 
+            password: hashedPassword, 
+            role,
+            companyName: role === 'Emlak Ofisi / Danışman' ? companyName : ''
+        });
 
         return res.status(201).json({
             success: true,
@@ -64,6 +70,10 @@ exports.loginUser = async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (isMatch) {
+            // GÜNCELLEME: Giriş başarılıysa bu kullanıcıyı global oturuma kaydediyoruz
+            // Böylece estateController kimin ilan eklediğini ve limitini görebilecek
+            global.currentUser = user;
+
             // Başarılı girişte frontend'e nereye gideceğini JSON olarak söylüyoruz
             return res.status(200).json({
                 success: true,

@@ -1,74 +1,35 @@
 <!DOCTYPE html>
 <html lang="tr">
-
 <head>
     <meta charset="UTF-8">
     <title>Piyasa Endeksli Değerleme Motoru</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f9;
-            padding: 20px;
-        }
-
-        .container {
-            background-color: white;
-            width: 600px;
-            margin: 0 auto;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #333;
-        }
-
-        select,
-        input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 15px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .btn:hover {
-            background-color: #218838;
-        }
+        body { font-family: Arial, sans-serif; background-color: #f4f6f9; padding: 20px; }
+        .container { background-color: white; width: 600px; margin: 0 auto; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); }
+        .nav { display: flex; justify-content: space-between; margin-bottom: 25px; background: #1e293b; padding: 12px; border-radius: 6px; }
+        .nav a { color: white; text-decoration: none; font-weight: bold; font-size: 14px; }
+        .nav a:hover { color: #28a745; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: bold; margin-bottom: 8px; color: #333; }
+        select, input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 15px; background-color: #28a745; color: white; border: none; border-radius: 5px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        .btn:hover { background-color: #218838; }
     </style>
 </head>
-
 <body>
     <div class="container">
-        <h2 style="color: #2c3e50; border-bottom: 2px solid #ddd; padding-bottom: 10px;">Gayrimenkul Değerleme Motoru
-        </h2>
-        <p style="color: #666;">Güncel piyasa veritabanı ile adil değer hesaplaması yapın.</p>
+        <div class="nav">
+            <a href="/dashboard">🏠 Değer Hesapla</a>
+            <a href="/listings" style="color: #28a745;">📋 Yayındaki Satılık İlanlar</a>
+        </div>
+
+        <h2 style="color: #2c3e50; border-bottom: 2px solid #ddd; padding-bottom: 10px;">Gayrimenkul Değerleme Paneli</h2>
+        <p style="color: #666; margin-bottom: 20px;">Evinizin özelliklerini girerek yapay zeka emlak endeks raporunu başlatın.</p>
 
         <form action="/calculate" method="POST">
-
             <div class="form-group">
-                <label>Şehir Seçimi (Veritabanından):</label>
-                <select name="district" required>
+                <label>Şehir Seçimi:</label>
+                <select id="citySelect" name="district" required>
                     <option value="İstanbul">İstanbul</option>
                     <option value="Ankara">Ankara</option>
                     <option value="İzmir">İzmir</option>
@@ -86,8 +47,14 @@
             </div>
 
             <div class="form-group">
+                <label>İlçe Seçimi:</label>
+                <select id="subDistrictSelect" name="subDistrict" required>
+                    </select>
+            </div>
+
+            <div class="form-group">
                 <label>Konut Genişliği (m²):</label>
-                <input type="number" name="sqm" placeholder="Örn: 90" required>
+                <input type="number" name="sqm" placeholder="Örn: 100" required>
             </div>
 
             <div class="form-group">
@@ -102,16 +69,49 @@
             <div class="form-group">
                 <label>Ulaşım İmkanlarına Yakınlık:</label>
                 <select name="transport" required>
-                    <option value="yakin">Yürüme Mesafesinde (Metro/Metrobüs dibinde)</option>
-                    <option value="uzak">Araç Mesafesinde</option>
+                    <option value="yakin">Yürüme Mesafesinde (Merkezi konum)</option>
+                    <option value="uzak">Araç Mesafesinde (Uzak konum)</option>
                 </select>
             </div>
 
-            <input type="hidden" name="actionType" value="sadece_deger">
-
-            <button type="submit" class="btn">Piyasa Analizini Başlat</button>
+            <button type="submit" class="btn">Hesapla ve Raporu Göster</button>
         </form>
     </div>
-</body>
 
+    <script>
+        const districtData = {
+            "İstanbul": ["Kadıköy", "Fatih", "Beylikdüzü"],
+            "Ankara": ["Çankaya", "Keçiören", "Sincan"],
+            "İzmir": ["Konak", "Karşıyaka", "Bornova"],
+            "Bursa": ["Nilüfer", "Osmangazi", "Yıldırım"],
+            "Antalya": ["Muratpaşa", "Konyaaltı", "Kepez"],
+            "Adana": ["Seyhan", "Çukurova", "Yüreğir"],
+            "Konya": ["Selçuklu", "Meram", "Karatay"],
+            "Şanlıurfa": ["Haliliye", "Karaköprü", "Eyyübiye"],
+            "Gaziantep": ["Şehitkamil", "Şahinbey", "Nizip"],
+            "Kocaeli": ["İzmit", "Gebze", "Kartepe"],
+            "Kastamonu": ["Merkez", "Tosya", "İnebolu"],
+            "Mardin": ["Artuklu", "Midyat", "Kızıltepe"],
+            "Sinop": ["Merkez", "Boyabat", "Gerze"]
+        };
+
+        const citySelect = document.getElementById('citySelect');
+        const subDistrictSelect = document.getElementById('subDistrictSelect');
+
+        function updateDistricts() {
+            const selectedCity = citySelect.value;
+            const districts = districtData[selectedCity] || [];
+            subDistrictSelect.innerHTML = '';
+            districts.forEach(dist => {
+                const opt = document.createElement('option');
+                opt.value = dist;
+                opt.textContent = dist;
+                subDistrictSelect.appendChild(opt);
+            });
+        }
+
+        citySelect.addEventListener('change', updateDistricts);
+        updateDistricts();
+    </script>
+</body>
 </html>
