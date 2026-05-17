@@ -39,5 +39,16 @@
     "userRole": "Emlak Ofisi / Danışman",
     "companyName": "Kuzey Emlak",
     "date": "17.05.2026 18:47:14"
+  },
+  {
+    "district": "İstanbul",
+    "subDistrict": "Kadıköy",
+    "sqm": 120,
+    "userPrice": 8694000,
+    "systemPrice": 8694000,
+    "owner": "emlak123",
+    "userRole": "Emlak Ofisi / Danışman",
+    "companyName": "Kuzey Emlak",
+    "date": "17.05.2026 18:57:14"
   }
 ]
