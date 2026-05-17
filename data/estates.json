@@ -17,5 +17,27 @@
     "userRole": "Emlak Ofisi / Danışman",
     "companyName": "Kuzey Emlak",
     "date": "17.05.2026 18:38:31"
+  },
+  {
+    "district": "İstanbul",
+    "subDistrict": "Beylikdüzü",
+    "sqm": 120,
+    "userPrice": 3500000,
+    "systemPrice": 3283200,
+    "owner": "emlak123",
+    "userRole": "Emlak Ofisi / Danışman",
+    "companyName": "Kuzey Emlak",
+    "date": "17.05.2026 18:46:50"
+  },
+  {
+    "district": "Ankara",
+    "subDistrict": "Keçiören",
+    "sqm": 120,
+    "userPrice": 5000000,
+    "systemPrice": 3726000,
+    "owner": "emlak123",
+    "userRole": "Emlak Ofisi / Danışman",
+    "companyName": "Kuzey Emlak",
+    "date": "17.05.2026 18:47:14"
   }
 ]
