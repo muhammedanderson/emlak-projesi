@@ -19,6 +19,15 @@ const getSavedEstates = () => {
     } catch (err) { return []; }
 };
 
+const getNavHtml = () => `
+    <div style="display:flex; justify-content:space-between; margin-bottom:25px; background:#1e293b; padding:12px; border-radius:6px; font-family:Arial;">
+        <a href="/dashboard" style="color:white; text-decoration:none; font-weight:bold; font-size:13px;">🏠 Değer Hesapla</a>
+        <a href="/listings" style="color:white; text-decoration:none; font-weight:bold; font-size:13px;">📋 Tüm İlanlar</a>
+        <a href="/my-listings" style="color:#f1c40f; text-decoration:none; font-weight:bold; font-size:13px;">⭐ Benim İlanlarım</a>
+        <a href="/profile" style="color:#a855f7; text-decoration:none; font-weight:bold; font-size:13px;">👤 Profilim</a>
+    </div>
+`;
+
 exports.getDashboard = (req, res) => {
     res.sendFile(path.join(__dirname, '../views/dashboard.html'));
 };
@@ -56,7 +65,7 @@ exports.calculateValuation = (req, res) => {
     res.send(`
         <div style="font-family: Arial, sans-serif; padding: 30px; max-width: 600px; margin: 40px auto; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); background:#fff;">
             <div style="display:flex; justify-content:space-between; align-items:center; border-bottom: 3px solid #f1c40f; padding-bottom: 10px; margin-bottom: 20px;">
-                <h2 style="color: #2c3e50; margin:0;">📊 Gelişmiş Piyasa Karşılaştırma Raporu</h2>
+                <h2 style="color: #2c3e50; margin:0; font-size:1.5em;">📊 Gelişmiş Piyasa Karşılaştırma Raporu</h2>
                 <button onclick="window.print()" style="padding: 6px 12px; background: #34495e; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.85em;">🖨 Raporu Yazdır (PDF)</button>
             </div>
             
@@ -68,18 +77,12 @@ exports.calculateValuation = (req, res) => {
                 <p style="margin:0;">Sarı sitede bu özelliklere benzer ilanlar şu an ortalama <b style='color:#e67e22;'>${sariSiteSimilarPrice.toLocaleString('tr-TR')} TL</b> civarında listelenmektedir.</p>
             </div>
 
-            <div style="background: #f4f6f7; padding: 15px; border-radius: 6px; margin: 20px 0; border-left: 5px solid #34495e; font-size: 0.85em; color: #555;">
-                <p style="margin: 2px 0;"><b>Veritabanı Analiz Havuzu:</b> ${cityData.scrapedFrom}</p>
-                <p style="margin: 2px 0;"><b>Bölge Çarpanı:</b> x${subDistrictMultiplier}</p>
-            </div>
-
             <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
             <h3 style="color: #7f8c8d; margin-bottom:5px; font-weight:normal;">Sistemimizin Önerdiği Adil Değer:</h3>
             <h1 style="color: #27ae60; margin-top: 0; font-size: 2.5em;">${internalPrice.toLocaleString('tr-TR')} TL</h1>
             
             <form action="/publish" method="POST" style="margin-top: 30px; background: #f0fdf4; padding: 20px; border-radius: 8px; border: 1px dashed #16a34a;">
                 <h3 style="margin-top: 0; color: #16a34a;">🚀 Bu Evi Pazaryerinde Yayınla</h3>
-                <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Aşağıdaki kutuya evinizi eklemek istediğiniz nihai satış fiyatını yazarak ilan havuzuna fırlatabilirsiniz.</p>
                 
                 <input type="hidden" name="district" value="${district}">
                 <input type="hidden" name="subDistrict" value="${subDistrict}">
@@ -91,19 +94,23 @@ exports.calculateValuation = (req, res) => {
                     <label style="display:block; font-weight:bold; margin-bottom:6px; color:#1e293b;">İlan Listeleme Fiyatınız (TL):</label>
                     <input type="number" name="customPrice" value="${internalPrice}" style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; font-size:16px; box-sizing:border-box;" required>
                 </div>
-                
-                <button type="submit" style="width:100%; padding:12px; background:#16a34a; color:white; border:none; border-radius:6px; font-size:15px; font-weight:bold; cursor:pointer;">İlanı Bu Fiyatla Canlıya Al</button>
-            </form>
 
+                <div style="margin-bottom: 15px;">
+                    <label style="display:block; font-weight:bold; margin-bottom:6px; color:#1e293b;">İlan Notu / Açıklama:</label>
+                    <input type="text" name="note" placeholder="Örn: Acil satılık, metroya yakın, pazarlık payı var..." style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; font-size:14px; box-sizing:border-box;">
+                </div>
+                
+                <button type="submit" style="width:100%; padding:12px; background:#16a34a; color:white; border:none; border-radius:6px; font-size:15px; font-weight:bold; cursor:pointer;">İlanı Bu Bilgilerle Canlıya Al</button>
+            </form>
             <br>
-            <a href="/dashboard" style="display:inline-block; padding: 10px 15px; background-color: #2c3e50; color: white; text-decoration: none; border-radius: 5px; font-size:0.9em;">⬅ Yanlış Girdim, Geri Dön</a>
+            <a href="/dashboard" style="display:inline-block; padding: 10px 15px; background-color: #2c3e50; color: white; text-decoration: none; border-radius: 5px; font-size:0.9em;">⬅ Vazgeç ve Dön</a>
         </div>
     `);
 };
 
-// 2. AŞAMA: İlanı Veritabanına Yazma
+// 2. AŞAMA: İlanı Kaydetme
 exports.publishListing = (req, res) => {
-    const { district, subDistrict, sqm, age, systemPrice, customPrice } = req.body;
+    const { district, subDistrict, sqm, age, systemPrice, customPrice, note } = req.body;
     const activeUser = global.currentUser || { username: "misafir_user", role: "Bireysel Kullanıcı", companyName: "" };
 
     const currentEstates = getSavedEstates();
@@ -123,12 +130,14 @@ exports.publishListing = (req, res) => {
     }
 
     currentEstates.push({
+        id: Date.now().toString(), 
         district,
         subDistrict,
         sqm: Number(sqm),
         age: age || '0-5',
         userPrice: parseInt(customPrice),
         systemPrice: parseInt(systemPrice),
+        note: note || 'Açıklama belirtilmedi.',
         owner: activeUser.username,
         userRole: activeUser.role,
         companyName: activeUser.companyName || '',
@@ -139,7 +148,7 @@ exports.publishListing = (req, res) => {
     res.redirect('/listings');
 };
 
-// GÜNCEL PAZARYERİ: EKSPERTİZ KOLONU UÇURULDU, YERİNE BİNA YAŞI GELDİ
+// 3. AŞAMA: TÜM İLANLARI LİSTELEME
 exports.getListings = (req, res) => {
     const listings = getSavedEstates();
 
@@ -187,7 +196,7 @@ exports.getListings = (req, res) => {
             rows += `
                 <tr class="listing-row" style="border-bottom: 1px solid #eee; ${rowStyle}">
                     <td style="padding:12px; text-align:center;">
-                        <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=100&auto=format&fit=crop&q=60" style="border-radius:6px; width:70px; height:50px; object-fit:cover; border:1px solid #ddd;" alt="Ev">
+                        <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=100&auto=format&fit=crop&q=60" style="border-radius:6px; width:70px; height:50px; object-fit:cover; border:1px solid #ddd;">
                     </td>
                     <td class="searchable-city" style="padding:12px;"><b>${item.district}</b></td>
                     <td class="searchable-sub" style="padding:12px;">${item.subDistrict || 'Merkez'}</td>
@@ -203,15 +212,10 @@ exports.getListings = (req, res) => {
 
     res.send(`
         <div style="font-family: Arial, sans-serif; padding: 30px; max-width: 1050px; margin: 40px auto; border: 1px solid #ddd; border-radius: 8px; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; border-bottom:2px solid #eee; padding-bottom:10px;">
-                <h2 style="color: #2c3e50; margin:0;">📋 Kurumsal Gayrimenkul Pazaryeri Havuzu</h2>
-                <a href="/dashboard" style="padding: 10px 15px; background: #1e293b; color: white; text-decoration: none; border-radius: 5px; font-size:0.9em; font-weight:bold;">+ Yeni Analiz / İlan Ekle</a>
-            </div>
-
+            ${getNavHtml()}
             <div style="margin-bottom: 20px;">
                 <input type="text" id="tableSearchInput" onkeyup="filterMarketTable()" placeholder="🔍 Şehir veya ilçe ismine göre anlık filtrele..." style="width: 100%; padding: 12px 16px; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 15px; outline: none; box-sizing: border-box;">
             </div>
-
             <table id="marketTable" style="width: 100%; border-collapse: collapse; text-align: left; font-size:14px;">
                 <thead>
                     <tr style="background: #f8fafc; border-bottom: 2px solid #cbd5e1;">
@@ -225,34 +229,128 @@ exports.getListings = (req, res) => {
                         <th style="padding:12px;">Yetkili / Kaynak</th>
                     </tr>
                 </thead>
-                <tbody>
-                    ${rows}
-                </tbody>
+                <tbody>${rows}</tbody>
             </table>
         </div>
-
         <script>
             function filterMarketTable() {
                 const input = document.getElementById('tableSearchInput');
                 const filter = input.value.toUpperCase();
                 const rows = document.getElementsByClassName('listing-row');
-
                 for (let i = 0; i < rows.length; i++) {
                     const cityCell = rows[i].getElementsByClassName('searchable-city')[0];
                     const subCell = rows[i].getElementsByClassName('searchable-sub')[0];
-                    
                     if (cityCell || subCell) {
-                        const cityText = cityCell.textContent || cityCell.innerText;
-                        const subText = subCell.textContent || subCell.innerText;
-                        
-                        if (cityText.toUpperCase().indexOf(filter) > -1 || subText.toUpperCase().indexOf(filter) > -1) {
+                        if (cityCell.textContent.toUpperCase().indexOf(filter) > -1 || subCell.textContent.toUpperCase().indexOf(filter) > -1) {
                             rows[i].style.display = "";
-                        } else {
-                            rows[i].style.display = "none";
-                        }
+                        } else { rows[i].style.display = "none"; }
                     }
                 }
             }
         </script>
+    `);
+};
+
+// 4. BÖLÜM: BENİM İLANLARIM PANELİ (YEDEKLİ FORM YAPISI)
+exports.getMyListings = (req, res) => {
+    const activeUser = global.currentUser || { username: "misafir_user", role: "Bireysel Kullanıcı" };
+    const allListings = getSavedEstates();
+    const myListings = allListings.filter(item => item.owner === activeUser.username);
+
+    let rows = "";
+    if (myListings.length === 0) {
+        rows = `<tr><td colspan="6" style="text-align:center; padding:30px; color:#aaa;">Henüz eklediğiniz bir ilan bulunmuyor.</td></tr>`;
+    } else {
+        myListings.forEach(item => {
+            const priceVal = item.userPrice || item.estimatedPrice || 0;
+            rows += `
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                    <td style="padding:14px;"><b>${item.district}</b></td>
+                    <td style="padding:14px;">${item.subDistrict}</td>
+                    <td style="padding:14px;">${item.sqm} m²</td>
+                    <td style="padding:14px; font-weight:bold; color:#16a34a;">${priceVal.toLocaleString('tr-TR')} TL</td>
+                    <td style="padding:14px; color:#555; max-width:200px;"><i>"${item.note || '-'}"</i></td>
+                    <td style="padding:14px; text-align:center;">
+                        <form action="/delete-listing" method="POST" style="margin:0;">
+                            <input type="hidden" name="id" value="${item.id || ''}">
+                            <input type="hidden" name="district" value="${item.district}">
+                            <input type="hidden" name="subDistrict" value="${item.subDistrict}">
+                            <input type="hidden" name="userPrice" value="${priceVal}">
+                            <button type="submit" style="background:#e74c3c; color:white; border:none; padding:6px 12px; border-radius:4px; font-weight:bold; cursor:pointer;" onclick="return confirm('Bu ilanı kalıcı olarak silmek istediğinize emin misiniz?')">❌ İlanı Sil</button>
+                        </form>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+
+    res.send(`
+        <div style="font-family: Arial, sans-serif; padding: 30px; max-width: 900px; margin: 40px auto; border: 1px solid #ddd; border-radius: 8px; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+            ${getNavHtml()}
+            <h2 style="color: #2c3e50; margin-bottom: 5px;">⭐ Yönetilebilir İlan Panelim</h2>
+            <p style="color:#666; margin-bottom:20px;">Sistemde kendi adınıza yayına aldığınız ilanları buradan inceleyebilir ve silebilirsiniz.</p>
+            <table style="width: 100%; border-collapse: collapse; text-align: left; font-size:14px;">
+                <thead style="background: #f8fafc; border-bottom: 2px solid #cbd5e1;">
+                    <tr>
+                        <th style="padding:12px;">Şehir</th>
+                        <th style="padding:12px;">İlçe</th>
+                        <th style="padding:12px;">Metrekare</th>
+                        <th style="padding:12px;">Yayın Fiyatınız</th>
+                        <th style="padding:12px;">İlan Notunuz</th>
+                        <th style="padding:12px; text-align:center;">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>${rows}</tbody>
+            </table>
+        </div>
+    `);
+};
+
+// 5. BÖLÜM: KURŞUN GEÇİRMEZ ARKA PLAN SİLME ALGORİTMASI (KESİN ÇÖZÜM)
+exports.deleteListing = (req, res) => {
+    const { id, district, subDistrict, userPrice } = req.body;
+    let allListings = getSavedEstates();
+
+    // 1. Durum: Eğer ID gerçekse ve "undefined" string'i değilse doğrudan ID ile sil
+    if (id && id !== 'undefined' && id !== '') {
+        allListings = allListings.filter(item => item.id !== id);
+    } else {
+        // 2. Durum (Yedek Plan): ID bulunamadıysa (eski test verisiyse) konum ve fiyattan yakala ve sil
+        allListings = allListings.filter(item => {
+            const itemPrice = item.userPrice || item.estimatedPrice || 0;
+            return !(item.district === district && 
+                     item.subDistrict === subDistrict && 
+                     String(itemPrice) === String(userPrice));
+        });
+    }
+
+    fs.writeFileSync(estatesPath, JSON.stringify(allListings, null, 2), 'utf8');
+    res.redirect('/my-listings');
+};
+
+// 6. BÖLÜM: PROFİL EKRANI
+exports.getProfile = (req, res) => {
+    const activeUser = global.currentUser || { username: "misafir_user", role: "Bireysel Kullanıcı", companyName: "" };
+    const allListings = getSavedEstates();
+    const totalUserListings = allListings.filter(item => item.owner === activeUser.username).length;
+
+    let companyRow = activeUser.role === 'Emlak Ofisi / Danışman' 
+        ? `<p style="font-size:1.1em; margin:10px 0;">🏢 <b>Bağlı Kurumsal Firma:</b> ${activeUser.companyName || 'Belirtilmedi'}</p>`
+        : '';
+
+    res.send(`
+        <div style="font-family: Arial, sans-serif; padding: 30px; max-width: 600px; margin: 40px auto; border: 1px solid #ddd; border-radius: 8px; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+            ${getNavHtml()}
+            <h2 style="color: #2c3e50; border-bottom: 2px solid #eee; padding-bottom:10px; margin-bottom:20px;">👤 Kullanıcı Profil Kartı</h2>
+            <div style="background:#f8fafc; padding:25px; border-radius:10px; border-left:6px solid #a855f7;">
+                <h3 style="margin-top:0; color:#1e293b; font-size:1.4em;">Hoş geldiniz, @${activeUser.username}!</h3>
+                <hr style="border:0; border-top:1px solid #e2e8f0; margin:15px 0;">
+                <p style="font-size:1.1em; margin:10px 0;">🛡️ <b>Hesap Yetki Tipi (Rol):</b> ${activeUser.role}</p>
+                ${companyRow}
+                <p style="font-size:1.1em; margin:10px 0;">📊 <b>Sistemdeki Aktif İlan Sayınız:</b> <span style="background:#a855f7; color:white; padding:2px 8px; border-radius:10px; font-weight:bold;">${totalUserListings} / ${activeUser.role === 'Bireysel Kullanıcı' ? '3' : 'Sınırsız'}</span></p>
+            </div>
+            <br>
+            <a href="/dashboard" style="display:inline-block; padding: 10px 15px; background-color: #2c3e50; color: white; text-decoration: none; border-radius: 5px; font-size:0.9em;">🏠 Panele Dön</a>
+        </div>
     `);
 };

@@ -9,46 +9,52 @@
   },
   {
     "district": "İstanbul",
-    "subDistrict": "Fatih",
-    "sqm": 100,
-    "userPrice": 6210000,
-    "systemPrice": 6210000,
-    "owner": "emlak123",
-    "userRole": "Emlak Ofisi / Danışman",
-    "companyName": "Kuzey Emlak",
-    "date": "17.05.2026 18:38:31"
-  },
-  {
-    "district": "İstanbul",
-    "subDistrict": "Beylikdüzü",
-    "sqm": 120,
-    "userPrice": 3500000,
-    "systemPrice": 3283200,
-    "owner": "emlak123",
-    "userRole": "Emlak Ofisi / Danışman",
-    "companyName": "Kuzey Emlak",
-    "date": "17.05.2026 18:46:50"
-  },
-  {
-    "district": "Ankara",
-    "subDistrict": "Keçiören",
-    "sqm": 120,
-    "userPrice": 5000000,
-    "systemPrice": 3726000,
-    "owner": "emlak123",
-    "userRole": "Emlak Ofisi / Danışman",
-    "companyName": "Kuzey Emlak",
-    "date": "17.05.2026 18:47:14"
+    "subDistrict": "Kadıköy",
+    "sqm": 123,
+    "age": "0-5",
+    "userPrice": 10693620,
+    "systemPrice": 10693620,
+    "owner": "muhammed321",
+    "userRole": "Bireysel Kullanıcı",
+    "companyName": "",
+    "date": "17.05.2026 19:24:29"
   },
   {
     "district": "İstanbul",
     "subDistrict": "Kadıköy",
-    "sqm": 120,
-    "userPrice": 8694000,
-    "systemPrice": 8694000,
+    "sqm": 123,
+    "age": "0-5",
+    "userPrice": 10693620,
+    "systemPrice": 10693620,
+    "owner": "muhammed321",
+    "userRole": "Bireysel Kullanıcı",
+    "companyName": "",
+    "date": "17.05.2026 19:24:48"
+  },
+  {
+    "district": "İstanbul",
+    "subDistrict": "Kadıköy",
+    "sqm": 123,
+    "age": "0-5",
+    "userPrice": 10693620,
+    "systemPrice": 10693620,
+    "owner": "muhammed321",
+    "userRole": "Bireysel Kullanıcı",
+    "companyName": "",
+    "date": "17.05.2026 19:24:54"
+  },
+  {
+    "id": "1779035819445",
+    "district": "İstanbul",
+    "subDistrict": "Kadıköy",
+    "sqm": 149,
+    "age": "0-5",
+    "userPrice": 12954060,
+    "systemPrice": 12954060,
+    "note": "acil satılık",
     "owner": "emlak123",
     "userRole": "Emlak Ofisi / Danışman",
     "companyName": "Kuzey Emlak",
-    "date": "17.05.2026 18:57:14"
+    "date": "17.05.2026 19:36:59"
   }
 ]
