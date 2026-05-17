@@ -1,1 +1,12 @@
-[]
+[
+  {
+    "username": "muhammed",
+    "password": "$2b$10$hl3sGxHG3HNI.7yzrwlmEu2aE5uyS.XLLhp8dYubaSzlKJIh.KyJq",
+    "role": "Bireysel Kullanıcı"
+  },
+  {
+    "username": "muhammed13",
+    "password": "$2b$10$DwWQnQBrQACZOM0aQUONvendQeSkXkPod0dCtLMUtPLB8basGGxFK",
+    "role": "Bireysel Kullanıcı"
+  }
+]

@@ -62,9 +62,8 @@ exports.loginUser = async (req, res) => {
         
         if (isMatch) {
             // Başarılı giriş simülasyonu
-            res.send(`<h1>Sisteme Başarıyla Giriş Yapıldı!</h1>
-                      <p>Hoş geldin <b>${user.username}</b>. Sisteme <b>${user.role}</b> yetkisiyle bağlandın.</p>
-                      <p><i>Fatih ve Bakırköy bölgelerindeki güncel emlak analiz paneline yönlendiriliyorsunuz...</i></p>`);
+          // Giriş başarılıysa kullanıcıyı direkt analiz paneline uçuruyoruz
+            return res.redirect('/dashboard');
         } else {
             res.send("Hatalı şifre!");
         }
