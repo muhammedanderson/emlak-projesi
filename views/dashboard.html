@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Emlak Değerleme Paneli</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f6f9; padding: 20px; }
+        .box { max-width: 550px; margin: 30px auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
+        .nav { display: flex; justify-content: space-between; margin-bottom: 20px; background: #2c3e50; padding: 12px; border-radius: 5px; }
+        .nav a { color: white; text-decoration: none; font-weight: bold; font-size: 0.95em; }
+        .nav a:hover { color: #27ae60; }
+        .group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background-color: #27ae60; color: white; border: none; border-radius: 4px; font-size: 1.1em; font-weight: bold; cursor: pointer; }
+        button:hover { background-color: #219653; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <div class="nav">
+            <a href="/dashboard">🏠 Fiyat Hesapla / İlan Ver</a>
+            <a href="/listings" style="color: #27ae60;">📋 Satılık İlanları İncele</a>
+        </div>
+
+        <h2>Gayrimenkul Değerleme ve Satış Merkezi</h2>
+        <p style="color:#666; font-size:0.9em;">Fatih ve Bakırköy bölgelerindeki konutunuz için işlem türünü seçerek ilerleyin.</p>
+        <hr><br>
+
+        <form action="/evaluate" method="POST">
+            <div class="group">
+                <label>Bölge Seçimi:</label>
+                <select name="district">
+                    <option value="Fatih">Fatih Bölgesi</option>
+                    <option value="Bakırköy">Bakırköy Bölgesi</option>
+                </select>
+            </div>
+
+            <div class="group">
+                <label>Konut Genişliği (m²):</label>
+                <input type="number" name="sqm" placeholder="Örn: 90" required>
+            </div>
+
+            <div class="group">
+                <label>Bina Yaşı:</label>
+                <select name="age">
+                    <option value="0-5">0 - 5 Yıl (Yeni Bina)</option>
+                    <option value="6-15">6 - 15 Yıl (Orta Yaşlı)</option>
+                    <option value="16+">16+ Yıl (Eski Bina)</option>
+                </select>
+            </div>
+
+            <div class="group">
+                <label>Ulaşım İmkanlarına Yakınlık:</label>
+                <select name="transport">
+                    <option value="yakin">Yürüme Mesafesinde (Metro/Metrobüs dibinde)</option>
+                    <option value="orta">Orta Derecede Yakın</option>
+                    <option value="uzak">Toplu Ulaşıma Uzak</option>
+                </select>
+            </div>
+
+            <div class="group" style="background: #e9f7ef; padding: 15px; border-radius: 4px; border: 1px dashed #27ae60;">
+                <label style="color: #219653;">Yapılacak İşlem:</label>
+                <select name="actionType" style="border-color: #27ae60;">
+                    <option value="just_calc">Sadece Evimin Tahmini Değerini Öğrenmek İstiyorum</option>
+                    <option value="list_for_sale">Değeri Hesapla ve Evimi Satılık İlanlarına Ekle!</option>
+                </select>
+            </div>
+
+            <button type="submit">İşlemi Onayla ve Başlat</button>
+        </form>
+    </div>
+</body>
+</html>
