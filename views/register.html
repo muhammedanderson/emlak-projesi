@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Yeni Hesap Oluştur | EmlakPazar</title>
     <style>
-        /* Genel Sıfırlama (Login ile aynı) */
+        /* Genel Sıfırlama */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -13,6 +14,7 @@
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
 
+        /* Sayfa Arka Planı (Hafif Gradyan) */
         body {
             background: linear-gradient(135deg, #e0e6ed 0%, #f4f7f6 100%);
             height: 100vh;
@@ -22,30 +24,30 @@
             padding: 20px;
         }
 
-        /* Beyaz Kart Konteyneri (Login ile benzer, daha uzun içerik için padding ayarlı) */
+        /* Beyaz Kart Konteyneri */
         .card-container {
             background: #ffffff;
-            padding: 45px 35px;
+            padding: 35px 35px;
             border-radius: 16px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
             width: 100%;
-            max-width: 460px; /* Kayıt formu biraz daha geniş olabilir */
+            max-width: 440px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
 
-        /* Başlık Alanı (image_8.png gibi) */
+        /* Başlık Alanı */
         .brand-section {
             text-align: center;
-            margin-bottom: 35px;
+            margin-bottom: 25px;
         }
 
-        .brand-logo {
-            font-size: 28px;
+        .brand-title {
+            font-size: 26px;
             font-weight: 800;
             color: #1e293b;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .brand-slogan {
@@ -54,26 +56,29 @@
             font-weight: 400;
         }
 
-        /* Form Alanları (Login ile aynı) */
+        /* Form Alanları */
         .form-group {
             width: 100%;
-            margin-bottom: 18px;
+            margin-bottom: 16px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             color: #1e293b;
             font-weight: 600;
-            font-size: 15px;
+            font-size: 14px;
         }
 
+        /* Input ve Select Alanı Stili */
         .form-control {
             width: 100%;
-            padding: 14px 16px;
+            padding: 12px 14px;
             border: 1px solid #e2e8f0;
             border-radius: 10px;
-            font-size: 16px;
+            background: #ffffff;
+            color: #1e293b;
+            font-size: 15px;
             outline: none;
             transition: all 0.2s ease;
         }
@@ -83,44 +88,31 @@
             box-shadow: 0 0 0 3px rgba(100, 116, 139, 0.1);
         }
 
-        .form-control::placeholder {
-            color: #94a3b8;
-        }
-
-        /* Onay Kutusu (Checkbox) Alanı */
+        /* Checkbox Alanı */
         .checkbox-group {
             width: 100%;
             display: flex;
-            align-items: flex-start;
-            margin-top: 5px;
-            margin-bottom: 25px;
-        }
-
-        .checkbox-group input[type="checkbox"] {
-            margin-top: 3px;
-            margin-right: 10px;
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-            accent-color: #22c55e; /* Yeşil renk */
-        }
-
-        .checkbox-group label {
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            font-size: 13px;
             color: #64748b;
-            font-size: 14px;
-            line-height: 1.5;
+        }
+
+        .checkbox-group input {
             cursor: pointer;
         }
 
         /* Yeşil Kayıt Butonu */
         .btn-register {
             width: 100%;
-            padding: 16px;
-            background-color: #22c55e; /* image_8.png'deki yeşil renk */
+            padding: 14px;
+            background-color: #15803d;
+            /* Ekran görüntündeki koyu yeşil */
             color: #ffffff;
             border: none;
             border-radius: 12px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
             cursor: pointer;
             transition: background-color 0.2s ease, transform 0.1s ease;
@@ -129,24 +121,23 @@
             justify-content: center;
         }
 
-        /* Roket Emojisi */
         .btn-register::after {
             content: ' 🚀';
-            margin-left: 8px;
-            font-size: 18px;
+            margin-left: 6px;
+            font-size: 16px;
         }
 
         .btn-register:hover {
-            background-color: #16a34a;
+            background-color: #166534;
         }
 
         .btn-register:active {
             transform: scale(0.99);
         }
 
-        /* Giriş Linki */
+        /* Alt Kısımdaki Giriş Linki */
         .switch-page-text {
-            margin-top: 30px;
+            margin-top: 20px;
             font-size: 14px;
             color: #64748b;
         }
@@ -162,28 +153,33 @@
         }
     </style>
 </head>
+
 <body>
 
     <div class="card-container">
         <div class="brand-section">
-            <div class="brand-logo">Yeni Hesap Oluştur</div>
+            <div class="brand-title">Yeni Hesap Oluştur</div>
             <div class="brand-slogan">Hemen katılın, emlak pazarındaki fırsatları kaçırmayın.</div>
         </div>
 
         <form id="registerForm" style="width: 100%;">
             <div class="form-group">
                 <label for="username">Kullanıcı Adı</label>
-                <input type="text" id="username" class="form-control" placeholder="Örn: muhammed_pazar" required>
+                <input type="text" id="username" class="form-control" placeholder="Örn: emrebalcan" required>
             </div>
 
             <div class="form-group">
-                <label for="email">E-posta Adresi</label>
-                <input type="email" id="email" class="form-control" placeholder="isim@ornek.com" required>
+                <label for="role">Üyelik Tipi (Rol)</label>
+                <select id="role" class="form-control" required>
+                    <option value="" disabled selected>Seçiniz...</option>
+                    <option value="Bireysel Kullanıcı">Bireysel Kullanıcı</option>
+                    <option value="Emlak Ofisi / Danışman">Emlak Ofisi / Danışman</option>
+                </select>
             </div>
 
             <div class="form-group">
                 <label for="password">Şifre</label>
-                <input type="password" id="password" class="form-control" placeholder="En az 6 karakter" required>
+                <input type="password" id="password" class="form-control" placeholder="********" required>
             </div>
 
             <div class="checkbox-group">
@@ -195,16 +191,48 @@
         </form>
 
         <div class="switch-page-text">
-          Zaten üye misiniz? <a href="/login" class="switch-page-link">Giriş Yapın</a>
+            Zaten üye misiniz? <a href="/login" class="switch-page-link">Giriş Yapın</a>
         </div>
     </div>
 
     <script>
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            // Senin backend fetch kodların buraya gelecek
-            alert('Backend enegrasyonu buraya yapılacak.');
+
+            const usernameInput = document.getElementById('username').value;
+            const roleInput = document.getElementById('role').value;
+            const passwordInput = document.getElementById('password').value;
+
+            try {
+                // authRoutes.js içindeki router.post('/register') endpoint'ine istek atıyoruz
+                const response = await fetch('/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: usernameInput,
+                        role: roleInput,
+                        password: passwordInput
+                    })
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    alert(result.message || 'Kayıt başarılı!');
+                    // Başarıyla kayıt olunca backend'den dönen url'e (yani /login sayfasına) yönlendiriyoruz
+                    window.location.href = result.redirectUrl || '/login';
+                } else {
+                    alert(result.message || 'Kayıt işlemi başarısız oldu.');
+                }
+
+            } catch (error) {
+                console.error('Bağlantı hatası:', error);
+                alert('Sunucuyla iletişim kurulurken bir hata oluştu.');
+            }
         });
     </script>
 </body>
+
 </html>
