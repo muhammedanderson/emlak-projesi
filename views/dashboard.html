@@ -5,10 +5,10 @@
     <title>Piyasa Endeksli Değerleme Motoru</title>
     <style>
         body { font-family: Arial, sans-serif; background-color: #f4f6f9; padding: 20px; }
-        .container { background-color: white; width: 600px; margin: 0 auto; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); }
-        .nav { display: flex; justify-content: space-between; margin-bottom: 25px; background: #1e293b; padding: 12px; border-radius: 6px; }
-        .nav a { color: white; text-decoration: none; font-weight: bold; font-size: 14px; }
-        .nav a:hover { color: #28a745; }
+        .container { background-color: white; width: 620px; margin: 0 auto; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); }
+        .nav { display: flex; justify-content: space-between; margin-bottom: 25px; background: #1e293b; padding: 12px; border-radius: 6px; gap: 5px; }
+        .nav a { color: white; text-decoration: none; font-weight: bold; font-size: 13px; padding: 6px 10px; border-radius: 4px; }
+        .nav a:hover { background: #2d3748; color: #28a745; }
         .form-group { margin-bottom: 20px; }
         label { display: block; font-weight: bold; margin-bottom: 8px; color: #333; }
         select, input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; box-sizing: border-box; }
@@ -20,7 +20,9 @@
     <div class="container">
         <div class="nav">
             <a href="/dashboard">🏠 Değer Hesapla</a>
-            <a href="/listings" style="color: #28a745;">📋 Yayındaki Satılık İlanlar</a>
+            <a href="/listings">📋 Tüm İlanlar</a>
+            <a href="/my-listings" style="color: #f1c40f;">⭐ Benim İlanlarım</a>
+            <a href="/profile" style="color: #a855f7;">👤 Profilim</a>
         </div>
 
         <h2 style="color: #2c3e50; border-bottom: 2px solid #ddd; padding-bottom: 10px;">Gayrimenkul Değerleme Paneli</h2>
