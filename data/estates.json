@@ -1,1 +1,21 @@
-
+[
+  {
+    "district": "Ankara",
+    "subDistrict": "Keçiören",
+    "sqm": 100,
+    "age": "6-15",
+    "estimatedPrice": 3105000,
+    "date": "17.05.2026 18:17:46"
+  },
+  {
+    "district": "İstanbul",
+    "subDistrict": "Fatih",
+    "sqm": 100,
+    "userPrice": 6210000,
+    "systemPrice": 6210000,
+    "owner": "emlak123",
+    "userRole": "Emlak Ofisi / Danışman",
+    "companyName": "Kuzey Emlak",
+    "date": "17.05.2026 18:38:31"
+  }
+]

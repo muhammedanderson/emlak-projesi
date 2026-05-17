@@ -1,100 +1,210 @@
 const path = require('path');
 const fs = require('fs');
 
-// 1. Kazınan piyasa verisini dosyadan okuyan fonksiyon
+const marketPath = path.join(__dirname, '../data/marketData.json');
+const estatesPath = path.join(__dirname, '../data/estates.json');
+
 const getScrapedMarketData = () => {
     try {
-        const marketPath = path.join(__dirname, '../data/marketData.json');
         const data = fs.readFileSync(marketPath, 'utf8');
         return JSON.parse(data);
-    } catch (err) {
-        console.error("Kazınan veritabanı okunamadı!");
-        return {};
-    }
+    } catch (err) { return {}; }
 };
 
-// 2. Dashboard sayfasını açan bölüm
+const getSavedEstates = () => {
+    try {
+        if (!fs.existsSync(estatesPath)) return [];
+        const data = fs.readFileSync(estatesPath, 'utf8');
+        return JSON.parse(data);
+    } catch (err) { return []; }
+};
+
 exports.getDashboard = (req, res) => {
     res.sendFile(path.join(__dirname, '../views/dashboard.html'));
 };
 
-// 3. Fiyat Hesaplama ve Raporu Ekrana Basma Bölümü
+// 1. AŞAMA: Sadece Fiyat Hesaplama ve Rapor Sunumu
 exports.calculateValuation = (req, res) => {
-    const { district, sqm, age, transport } = req.body;
+    const { district, subDistrict, sqm, age, transport } = req.body;
 
-    if (!district || !sqm || !age || !transport) {
+    if (!district || !subDistrict || !sqm || !age || !transport) {
         return res.send("Lütfen formdaki tüm alanları doldurun.");
     }
 
-    // --- KAZINAN VERİTABANINDAN BİLGİ ÇEKME ---
     const marketDb = getScrapedMarketData();
     const cityData = marketDb[district];
 
-    if (!cityData) {
-        return res.send("Seçilen şehre ait veri bulunamadı. Lütfen önce scraper.js'yi çalıştırın.");
+    if (!cityData || !cityData.districts || !cityData.districts[subDistrict]) {
+        return res.send("Seçilen bölgeye ait endeks verisi bulunamadı. Lütfen önce 'node scraper.js' çalıştırın.");
     }
 
-    // Kazınan gerçek taban m² fiyatı
     let basePricePerSqm = cityData.baseSqmPrice;
+    let subDistrictMultiplier = cityData.districts[subDistrict];
 
-    // Bina yaşı katsayıları
     let ageFactor = 1.0;
     if (age === '0-5') ageFactor = 1.2;
     if (age === '6-15') ageFactor = 1.0;
     if (age === '16+') ageFactor = 0.8;
 
-    // Ulaşım katsayıları
     let transportFactor = 1.0;
     if (transport === 'yakin') transportFactor = 1.15;
     if (transport === 'uzak') transportFactor = 0.95;
 
-    // Bizim sistemin hesapladığı adil değer
-    const internalPrice = Math.round(sqm * basePricePerSqm * ageFactor * transportFactor);
-
-    // SARI SİTE KARŞILAŞTIRMA MOTORU (Sarı sitede %8 pazarlık payı vardır)
+    const internalPrice = Math.round(sqm * basePricePerSqm * subDistrictMultiplier * ageFactor * transportFactor);
     const sariSiteSimilarPrice = Math.round(internalPrice * 1.08);
 
-    // Sonucu doğrudan havalı bir HTML rapor olarak ekrana bas
     res.send(`
         <div style="font-family: Arial, sans-serif; padding: 30px; max-width: 600px; margin: 40px auto; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); background:#fff;">
             <h2 style="color: #2c3e50; border-bottom: 3px solid #f1c40f; padding-bottom: 10px; margin-top:0;">📊 Gelişmiş Piyasa Karşılaştırma Raporu</h2>
             
-            <div style='background:#d4edda; color:#155724; padding:15px; border-radius:5px; margin-bottom:20px;'>
-                <b>✓ Başarılı:</b> Veritabanından piyasa analizi çekildi!
-            </div>
-            
-            <p><b>Seçilen Şehir:</b> ${district}</p>
-            <p><b>Konut Metrekaresi:</b> ${sqm} m² / Yaş Kategorisi: ${age}</p>
+            <p><b>Konum Bilgisi:</b> ${district} / ${subDistrict}</p>
+            <p><b>Konut Detayları:</b> ${sqm} m² / Bina Yaşı: ${age}</p>
             
             <div style="background: #fffde7; padding: 15px; border-radius: 6px; margin: 20px 0; border-left: 5px solid #f1c40f;">
-                <h4 style="margin: 0 0 5px 0; color: #9a7d0a;">🔍 Sarı Site Benzer İlan Tahmini:</h4>
-                <p style="margin:0;">Sarı sitede <b>${district}</b> genelinde bu özelliklere benzer ilanlar şu an ortalama <b style='color:#e67e22;'>${sariSiteSimilarPrice.toLocaleString('tr-TR')} TL</b> fiyat bandında listelenmektedir (Pazarlık Payı Dahil).</p>
+                <h4 style="margin: 0 0 5px 0; color: #9a7d0a;">🔍 Sarı Site (sahibinden.com) Piyasa Tahmini:</h4>
+                <p style="margin:0;">Sarı sitede bu özelliklere benzer ilanlar şu an ortalama <b style='color:#e67e22;'>${sariSiteSimilarPrice.toLocaleString('tr-TR')} TL</b> civarında listelenmektedir.</p>
             </div>
 
             <div style="background: #f4f6f7; padding: 15px; border-radius: 6px; margin: 20px 0; border-left: 5px solid #34495e; font-size: 0.85em; color: #555;">
-                <p style="margin: 2px 0;"><b>Veri Kaynağı:</b> ${cityData.scrapedFrom}</p>
-                <p style="margin: 2px 0;"><b>Kazınma Tarihi:</b> ${cityData.lastUpdated}</p>
-                <p style="margin: 2px 0;"><b>Ham m² Taban Fiyatı:</b> ${cityData.baseSqmPrice.toLocaleString('tr-TR')} TL</p>
+                <p style="margin: 2px 0;"><b>Veritabanı Analiz Havuzu:</b> ${cityData.scrapedFrom}</p>
+                <p style="margin: 2px 0;"><b>Bölge Çarpanı:</b> x${subDistrictMultiplier}</p>
             </div>
 
             <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+            <h3 style="color: #7f8c8d; margin-bottom:5px; font-weight:normal;">Sistemimizin Önerdiği Adil Değer:</h3>
+            <h1 style="color: #27ae60; margin-top: 0; font-size: 2.5em;">${internalPrice.toLocaleString('tr-TR')} TL</h1>
             
-            <h3 style="color: #7f8c8d; margin-bottom:5px; font-weight:normal;">Algoritmamızın Biçtiği Adil Değer:</h3>
-            <h1 style="color: #27ae60; margin-top: 0; font-size: 2.7em;">${internalPrice.toLocaleString('tr-TR')} TL</h1>
-            
+            <form action="/publish" method="POST" style="margin-top: 30px; background: #f0fdf4; padding: 20px; border-radius: 8px; border: 1px dashed #16a34a;">
+                <h3 style="margin-top: 0; color: #16a34a;">🚀 Bu Evi Pazaryerinde Yayınla</h3>
+                <p style="font-size: 0.85em; color: #666; margin-bottom: 15px;">Aşağıdaki kutuya evinizi eklemek istediğiniz nihai satış fiyatını yazarak ilan havuzuna fırlatabilirsiniz.</p>
+                
+                <input type="hidden" name="district" value="${district}">
+                <input type="hidden" name="subDistrict" value="${subDistrict}">
+                <input type="hidden" name="sqm" value="${sqm}">
+                <input type="hidden" name="age" value="${age}">
+                <input type="hidden" name="systemPrice" value="${internalPrice}">
+
+                <div style="margin-bottom: 15px;">
+                    <label style="display:block; font-weight:bold; margin-bottom:6px; color:#1e293b;">İlan Listeleme Fiyatınız (TL):</label>
+                    <input type="number" name="customPrice" value="${internalPrice}" style="width:100%; padding:10px; border:1px solid #ccc; border-radius:6px; font-size:16px; box-sizing:border-box;" required>
+                </div>
+                
+                <button type="submit" style="width:100%; padding:12px; background:#16a34a; color:white; border:none; border-radius:6px; font-size:15px; font-weight:bold; cursor:pointer;">İlanı Bu Fiyatla Canlıya Al</button>
+            </form>
+
             <br>
-            <a href="/dashboard" style="display:inline-block; padding: 10px 15px; background-color: #2c3e50; color: white; text-decoration: none; border-radius: 5px; font-size:0.9em;">⬅ Yeni Hesaplama Yap</a>
+            <a href="/dashboard" style="display:inline-block; padding: 10px 15px; background-color: #2c3e50; color: white; text-decoration: none; border-radius: 5px; font-size:0.9em;">⬅ Vazgeç ve Dön</a>
         </div>
     `);
 };
 
-// 4. İlanları Listeleme (HATAYI ÇÖZEN EKSİK FONKSİYON BURASI)
+// 2. AŞAMA: Kullanıcının Rapor Sonrası Girdiği Özel Fiyatla İlanı Veritabanına Yazma
+exports.publishListing = (req, res) => {
+    const { district, subDistrict, sqm, age, systemPrice, customPrice } = req.body;
+    const activeUser = global.currentUser || { username: "misafir_user", role: "Bireysel Kullanıcı", companyName: "" };
+
+    const currentEstates = getSavedEstates();
+
+    // --- BİREYSEL KULLANICI İLAN SINIR KONTROLÜ (MAKS 3) ---
+    if (activeUser.role === 'Bireysel Kullanıcı') {
+        const totalUserListings = currentEstates.filter(item => item.owner === activeUser.username).length;
+        if (totalUserListings >= 3) {
+            return res.send(`
+                <div style="font-family: Arial, sans-serif; padding: 40px; max-width: 550px; margin: 50px auto; border: 2px solid #e74c3c; border-radius: 12px; text-align: center; background:#fffcfc;">
+                    <h2 style="color: #e74c3c; margin-bottom:15px;">🚫 İlan Limiti Sınırına Ulaşıldı!</h2>
+                    <p style="font-size:1.1em; color:#333;">Sayın <b>${activeUser.username}</b>, Bireysel hesapların maksimum ilan yayınlama hakkı <b>3 adettir</b>.</p>
+                    <p style="color: #666; margin-top:10px;">Daha fazla ilan eklemek ve ilanlarınızı pazaryerinde en üst sıraya sabitlemek için lütfen sisteme <b>Emlak Danışmanı</b> olarak kayıt olunuz.</p>
+                    <br><br>
+                    <a href="/dashboard" style="display:inline-block; padding: 12px 20px; background: #2c3e50; color: white; text-decoration: none; border-radius: 6px; font-weight:bold;">⬅ Panele Geri Dön</a>
+                </div>
+            `);
+        }
+    }
+
+    // Veritabanına mühürleme işlemi
+    currentEstates.push({
+        district,
+        subDistrict,
+        sqm: Number(sqm),
+        userPrice: parseInt(customPrice),
+        systemPrice: parseInt(systemPrice),
+        owner: activeUser.username,
+        userRole: activeUser.role,
+        companyName: activeUser.companyName || '',
+        date: new Date().toLocaleString('tr-TR')
+    });
+
+    fs.writeFileSync(estatesPath, JSON.stringify(currentEstates, null, 2), 'utf8');
+    
+    // Doğrudan ilanların listelendiği pazaryeri sayfasına uçuruyoruz
+    res.redirect('/listings');
+};
+
 exports.getListings = (req, res) => {
+    const listings = getSavedEstates();
+
+    // Emlakçı ilanlarını en üste sıralama
+    listings.sort((a, b) => {
+        if (a.userRole === 'Emlak Ofisi / Danışman' && b.userRole !== 'Emlak Ofisi / Danışman') return -1;
+        if (a.userRole !== 'Emlak Ofisi / Danışman' && b.userRole === 'Emlak Ofisi / Danışman') return 1;
+        return 0;
+    });
+
+    let rows = "";
+    if (listings.length === 0) {
+        rows = `<tr><td colspan="7" style="text-align:center; padding:20px; color:#aaa;">Pazaryerinde henüz satılık ilan eklenmemiş.</td></tr>`;
+    } else {
+        listings.forEach(item => {
+            let rowStyle = "";
+            let ownerBadge = "";
+
+            const userPriceDisplay = item.userPrice || item.estimatedPrice || 0;
+            const systemPriceDisplay = item.systemPrice || item.estimatedPrice || 0;
+
+            if (item.userRole === 'Emlak Ofisi / Danışman') {
+                rowStyle = "background-color: #f0fdf4; border-left: 4px solid #16a34a;";
+                ownerBadge = `<span style="background: #16a34a; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8em; font-weight: bold; display:inline-block;">🏢 ${item.companyName || 'Emlak Ofisi'}</span>`;
+            } else {
+                rowStyle = "border-left: 4px solid #64748b;";
+                ownerBadge = `<span style="background: #64748b; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.8em; display:inline-block;">👤 Sahibinden (${item.owner || 'Bireysel'})</span>`;
+            }
+
+            rows += `
+                <tr style="border-bottom: 1px solid #eee; ${rowStyle}">
+                    <td style="padding:12px;"><b>${item.district}</b></td>
+                    <td style="padding:12px;">${item.subDistrict || 'Merkez'}</td>
+                    <td style="padding:12px;">${item.sqm} m²</td>
+                    <td style="padding:12px; color:#219653; font-weight:bold;">${userPriceDisplay.toLocaleString('tr-TR')} TL</td>
+                    <td style="padding:12px; color:#7f8c8d; font-size:0.9em;">${systemPriceDisplay.toLocaleString('tr-TR')} TL</td>
+                    <td style="padding:12px;">${ownerBadge}</td>
+                    <td style="padding:12px; color:#888; font-size:0.85em;">${item.date || 'Bilinmiyor'}</td>
+                </tr>
+            `;
+        });
+    }
+
     res.send(`
-        <div style="font-family: Arial, sans-serif; padding: 30px; text-align: center;">
-            <h2>📋 Güncel Satılık İlanlar</h2>
-            <p>Sistem şu an analiz modunda çalışmaktadır. İlan veritabanı entegrasyonu aktif değildir.</p>
-            <a href="/dashboard" style="padding: 10px 15px; background: #2c3e50; color: white; text-decoration: none; border-radius: 5px;">Geri Dön</a>
+        <div style="font-family: Arial, sans-serif; padding: 30px; max-width: 950px; margin: 40px auto; border: 1px solid #ddd; border-radius: 8px; background: #fff; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; border-bottom:2px solid #eee; padding-bottom:10px;">
+                <h2 style="color: #2c3e50; margin:0;">📋 Yayındaki Satılık İlanlar (Pazaryeri Havuzu)</h2>
+                <a href="/dashboard" style="padding: 10px 15px; background: #1e293b; color: white; text-decoration: none; border-radius: 5px; font-size:0.9em;">+ Yeni Analiz / İlan Ekle</a>
+            </div>
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead>
+                    <tr style="background: #f8fafc; border-bottom: 2px solid #cbd5e1;">
+                        <th style="padding:12px;">Şehir</th>
+                        <th style="padding:12px;">İlçe</th>
+                        <th style="padding:12px;">Metrekare</th>
+                        <th style="padding:12px; color:#219653;">Sizin Koyduğunuz Fiyat</th>
+                        <th style="padding:12px; color:#7f8c8d;">Sistem Adil Değeri</th>
+                        <th style="padding:12px;">İlan Sahibi / Firma</th>
+                        <th style="padding:12px;">İlan Tarihi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${rows}
+                </tbody>
+            </table>
         </div>
     `);
 };
