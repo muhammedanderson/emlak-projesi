@@ -8,5 +8,10 @@
     "username": "muhammed13",
     "password": "$2b$10$DwWQnQBrQACZOM0aQUONvendQeSkXkPod0dCtLMUtPLB8basGGxFK",
     "role": "Bireysel Kullanıcı"
+  },
+  {
+    "username": "EmreBalcan",
+    "password": "$2b$10$.3TfBg8ZpHV9pLoJJlTM6ete2AD9Ngab/yAKxJsGge/NR4nZ5I6r6",
+    "role": "Bireysel Kullanıcı"
   }
 ]
