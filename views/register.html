@@ -2,26 +2,202 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Emlak Değerleme | Kayıt</title>
-    <style>body { font-family: Arial; padding: 20px; }</style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kayıt Ol - EmlakPazar</title>
+    <style>
+        :root {
+            --primary-blue: #1e293b;        /* Kurumsal Lacivert */
+            --primary-hover: #0f172a;
+            --accent-green: #2ecc71;        /* Canlı Yeşil */
+            --accent-green-hover: #27ae60;
+            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            --card-bg: #ffffff;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 440px;
+            padding: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .card-header h1 {
+            margin: 0;
+            font-size: 26px;
+            font-weight: 800;
+            color: var(--primary-blue);
+            letter-spacing: -1px;
+        }
+
+        .card-header p {
+            margin: 8px 0 0 0;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-size: 13.5px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #334155;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 15px;
+            background-color: #ffffff;
+            color: var(--text-dark);
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+        }
+
+        /* Şartlar ve Sözleşme Kutusu */
+        .terms-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 5px;
+            margin-bottom: 20px;
+        }
+
+        .terms-group input {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .terms-group label {
+            margin-bottom: 0;
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        /* Kayıt Butonu */
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--accent-green);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2);
+        }
+
+        .btn-submit:hover {
+            background-color: var(--accent-green-hover);
+            box-shadow: 0 6px 16px rgba(39, 174, 96, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn-submit:active {
+            transform: translateY(1px);
+        }
+
+        /* Alt Link */
+        .card-footer {
+            margin-top: 25px;
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .card-footer a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .card-footer a:hover {
+            color: #1d4ed8;
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h2>Sisteme Kayıt Ol</h2>
-    <form action="/register" method="POST">
-        <label>Kullanıcı Adı:</label><br>
-        <input type="text" name="username" required><br><br>
+
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            <h1>Yeni Hesap Oluştur</h1>
+            <p>Hemen katılın, emlak pazarındaki fırsatları kaçırmayın.</p>
+        </div>
         
-        <label>Şifre:</label><br>
-        <input type="password" name="password" required><br><br>
+        <form action="/register" method="POST">
+            <div class="form-group">
+                <label for="username">Kullanıcı Adı</label>
+                <input type="text" name="username" id="username" placeholder="Örn: muhammed_pazar" required>
+            </div>
 
-        <label>Hesap Türü (Rol):</label><br>
-        <select name="role">
-            <option value="Bireysel Kullanıcı">Bireysel Kullanıcı</option>
-            <option value="Emlak Danışmanı">Emlak Danışmanı</option>
-        </select><br><br>
+            <div class="form-group">
+                <label for="email">E-posta Adresi</label>
+                <input type="email" name="email" id="email" placeholder="isim@ornek.com" required>
+            </div>
 
-        <button type="submit">Kayıt Ol</button>
-    </form>
-    <p>Zaten hesabın var mı? <a href="/login">Giriş Yap</a></p>
+            <div class="form-group">
+                <label for="password">Şifre</label>
+                <input type="password" name="password" id="password" placeholder="En az 6 karakter" required>
+            </div>
+
+            <div class="terms-group">
+                <input type="checkbox" id="terms" required>
+                <label for="terms">Kullanım şartlarını ve gizlilik politikasını kabul ediyorum.</label>
+            </div>
+
+            <button type="submit" class="btn-submit">Hesabımı Oluştur ve Başla 🚀</button>
+        </form>
+
+        <div class="card-footer">
+            Zaten üye misiniz? <a href="/login">Giriş Yapın</a>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>

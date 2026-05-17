@@ -1,74 +1,242 @@
+
 <!DOCTYPE html>
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Emlak Değerleme Paneli</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gayrimenkul Değerleme ve Satış Merkezi</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f6f9; padding: 20px; }
-        .box { max-width: 550px; margin: 30px auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.08); }
-        .nav { display: flex; justify-content: space-between; margin-bottom: 20px; background: #2c3e50; padding: 12px; border-radius: 5px; }
-        .nav a { color: white; text-decoration: none; font-weight: bold; font-size: 0.95em; }
-        .nav a:hover { color: #27ae60; }
-        .group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background-color: #27ae60; color: white; border: none; border-radius: 4px; font-size: 1.1em; font-weight: bold; cursor: pointer; }
-        button:hover { background-color: #219653; }
+        :root {
+            --primary-blue: #1e293b;        /* Koyu Şık Navigasyon Rengi */
+            --accent-green: #2ecc71;        /* Canlı Buton Yeşili */
+            --accent-green-hover: #27ae60;  /* Buton Hover Rengi */
+            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            --card-bg: #ffffff;
+            --text-dark: #0f172a;
+            --text-muted: #475569;
+            --border-color: #cbd5e1;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* Üst Menü / Navbar */
+        .navbar {
+            background-color: var(--primary-blue);
+            padding: 14px 30px;
+            display: flex;
+            justify-content: flex-start;
+            gap: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar a {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .navbar a.active {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .navbar a.secondary {
+            color: #a8f0c6; /* Hafif Yeşilimsi Link */
+        }
+
+        .navbar a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        /* Ana Panel Kartı */
+        .main-container {
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 20px;
+        }
+
+        .card-header h2 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--primary-blue);
+            letter-spacing: -0.5px;
+        }
+
+        .card-header p {
+            margin: 10px 0 0 0;
+            color: var(--text-muted);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Form Elemanları Tasarımı */
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--primary-blue);
+        }
+
+        select, input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 15px;
+            background-color: #ffffff;
+            color: var(--text-dark);
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #3b82f6; /* Odaklanınca şık modern mavi çizgi */
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+        }
+
+        /* Arkadaşının Tasarımındaki Yeşil Özel İşlem Alanı */
+        .action-box {
+            background-color: #f0fdf4;
+            border: 2px dashed #bbf7d0;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 25px;
+            margin-bottom: 25px;
+        }
+
+        .action-box label {
+            color: #166534;
+        }
+
+        .action-box select {
+            border-color: #86efac;
+        }
+
+        /* Ana Gönderim Butonu */
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background-color: var(--accent-green);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.2);
+        }
+
+        .btn-submit:hover {
+            background-color: var(--accent-green-hover);
+            box-shadow: 0 6px 16px rgba(39, 174, 96, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn-submit:active {
+            transform: translateY(1px);
+        }
     </style>
 </head>
 <body>
-    <div class="box">
-        <div class="nav">
-            <a href="/dashboard">🏠 Fiyat Hesapla / İlan Ver</a>
-            <a href="/listings" style="color: #27ae60;">📋 Satılık İlanları İncele</a>
+
+    <nav class="navbar">
+        <a href="/dashboard" class="active">🏠 Fiyat Hesapla / İlan Ver</a>
+        <a href="/listings" class="secondary">📋 Satılık İlanları İncele</a>
+    </nav>
+
+    <main class="main-container">
+        <div class="card">
+            <div class="card-header">
+                <h2>Gayrimenkul Değerleme ve Satış Merkezi</h2>
+                <p>Fatih ve Bakırköy bölgelerindeki konutunuz için işlem türünü seçerek ilerleyin.</p>
+            </div>
+
+            <form action="/calculate-price" method="POST">
+                
+                <div class="form-group">
+                    <label for="bolge">Bölge Seçimi:</label>
+                    <select name="bolge" id="bolge" required>
+                        <option value="Fatih">Fatih Bölgesi</option>
+                        <option value="Bakırköy">Bakırköy Bölgesi</option>
+                        <option value="Kadıköy">Kadıköy Bölgesi</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="metrekare">Konut Genişliği (m²):</label>
+                    <input type="number" name="metrekare" id="metrekare" placeholder="Örn: 90" min="10" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="binaYasi">Bina Yaşı:</label>
+                    <select name="binaYasi" id="binaYasi" required>
+                        <option value="0-5">0 - 5 Yıl (Yeni Bina)</option>
+                        <option value="6-15">6 - 15 Yıl Arası</option>
+                        <option value="16+">16 Yıl ve Üzeri</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="ulasim">Ulaşım İmkanlarına Yakınlık:</label>
+                    <select name="ulasim" id="ulasim" required>
+                        <option value="yurume">Yürüme Mesafesinde (Metro/Metrobüs dibinde)</option>
+                        <option value="arac">Araç Mesafesinde</option>
+                        <option value="uzak">Toplu Taşımaya Uzak</option>
+                    </select>
+                </div>
+
+                <div class="action-box">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label for="islem">Yapılacak İşlem:</label>
+                        <select name="islem" id="islem" required>
+                            <option value="tahmin">Sadece Evimin Tahmini Değerini Öğrenmek İstiyorum</option>
+                            <option value="ilan">Evimi Doğrudan Satış İlanı Olarak Eklemek İstiyorum</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">İşlemi Onayla ve Başlat 🚀</button>
+            </form>
+
         </div>
+    </main>
 
-        <h2>Gayrimenkul Değerleme ve Satış Merkezi</h2>
-        <p style="color:#666; font-size:0.9em;">Fatih ve Bakırköy bölgelerindeki konutunuz için işlem türünü seçerek ilerleyin.</p>
-        <hr><br>
-
-        <form action="/evaluate" method="POST">
-            <div class="group">
-                <label>Bölge Seçimi:</label>
-                <select name="district">
-                    <option value="Fatih">Fatih Bölgesi</option>
-                    <option value="Bakırköy">Bakırköy Bölgesi</option>
-                </select>
-            </div>
-
-            <div class="group">
-                <label>Konut Genişliği (m²):</label>
-                <input type="number" name="sqm" placeholder="Örn: 90" required>
-            </div>
-
-            <div class="group">
-                <label>Bina Yaşı:</label>
-                <select name="age">
-                    <option value="0-5">0 - 5 Yıl (Yeni Bina)</option>
-                    <option value="6-15">6 - 15 Yıl (Orta Yaşlı)</option>
-                    <option value="16+">16+ Yıl (Eski Bina)</option>
-                </select>
-            </div>
-
-            <div class="group">
-                <label>Ulaşım İmkanlarına Yakınlık:</label>
-                <select name="transport">
-                    <option value="yakin">Yürüme Mesafesinde (Metro/Metrobüs dibinde)</option>
-                    <option value="orta">Orta Derecede Yakın</option>
-                    <option value="uzak">Toplu Ulaşıma Uzak</option>
-                </select>
-            </div>
-
-            <div class="group" style="background: #e9f7ef; padding: 15px; border-radius: 4px; border: 1px dashed #27ae60;">
-                <label style="color: #219653;">Yapılacak İşlem:</label>
-                <select name="actionType" style="border-color: #27ae60;">
-                    <option value="just_calc">Sadece Evimin Tahmini Değerini Öğrenmek İstiyorum</option>
-                    <option value="list_for_sale">Değeri Hesapla ve Evimi Satılık İlanlarına Ekle!</option>
-                </select>
-            </div>
-
-            <button type="submit">İşlemi Onayla ve Başlat</button>
-        </form>
-    </div>
 </body>
 </html>
